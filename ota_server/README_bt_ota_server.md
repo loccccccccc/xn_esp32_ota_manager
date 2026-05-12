@@ -176,3 +176,58 @@ http://你的域名/
 
 - **Q: 忘记后台登录密码怎么办？**
   - A: 删除站点根目录下的 `auth.json` 文件后，系统会回退到默认账号 `admin` / `admin123`，然后重新登录并尽快修改为新的安全密码。
+
+
+//生成url下载不了固件排查步骤
+
+排查步骤：
+1. 首先检查你的部署位置
+你把 ota_server 文件夹放到 XAMPP 的哪个目录了？应该是：
+
+
+plainText
+C:\xampp\htdocs\ota_server\
+检查方法：
+
+打开文件资源管理器
+导航到 C:\xampp\htdocs\
+看是否有 ota_server 文件夹
+进入 ota_server，再看是否有 firmware 文件夹
+2. 手动创建 firmware 目录
+如果 firmware 目录不存在或为空，手动创建：
+
+
+cmd
+# 在 ota_server 目录下创建 firmware 文件夹
+cd C:\xampp\htdocs\ota_server
+mkdir firmware
+3. 检查权限
+右键 ota_server 文件夹
+选择"属性"
+切换到"安全"选项卡
+确保 IUSR 和 Apache 用户有"写入"权限
+4. 检查 Apache 配置
+打开 C:\xampp\apache\conf\httpd.conf，检查是否有这段：
+
+
+apache
+<Directory "C:/xampp/htdocs">
+    AllowOverride All
+    Require all granted
+</Directory>
+如果没有，手动添加。
+
+5. 确认 firmware 目录权限
+在 C:\xampp\htdocs\ota_server\ 下，确保：
+
+
+cmd
+# 目录权限设置为可读写
+attrib -r firmware /s
+快速验证方法
+打开浏览器访问这些地址：
+
+✅ http://localhost/ota_server/ - 应该显示登录页面
+✅ http://localhost/ota_server/index.php - 应该显示登录页面
+❓ http://localhost/ota_server/firmware/version.json - 应该显示 JSON 内容
+❓ http://localhost/ota_server/firmware/wifi_spiffs.bin - 需要先上传固件
